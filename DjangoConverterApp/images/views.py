@@ -1,10 +1,14 @@
 from django.shortcuts import render, HttpResponse
 import img2pdf
 from PIL import Image
-import fpdf
+from fpdf import FPDF
 import io
 from docx import Document
 from docx2pdf import convert
+from pdf2docx import Converter
+import uuid
+import pythoncom
+import os
 
 def imgtopdf(request):
     if request.method == 'POST':
@@ -17,32 +21,135 @@ def imgtopdf(request):
 
 def docxtopdf(request):
     if request.method == 'POST':
-        docx_file = request.FILES['docx']
+        pythoncom.CoInitialize()  # CoInitialize çağrısı
+        try:
+            
+            # Generate a unique ID for the file and filename
+            file_id = str(uuid.uuid4())
+            docx_filename = f"uploaded_{file_id}.docx"  # Örnek dosya adı
+            pdf_filename = f"converted_{file_id}.pdf"
 
-        # Docx dosyasını oku
-        docx_content = docx_file.read()
+            # Get the uploaded DOCX file
+            docx_file = request.FILES['docx']
 
-        # Docx içeriğini PDF'ye dönüştür
-        document = Document(io.BytesIO(docx_content))
-        pdf_bytes = io.BytesIO()
-        document.save(pdf_bytes)
+            # Save the uploaded DOCX file
+            with open(docx_filename, 'wb') as f:
+                f.write(docx_file.read())
 
-        # PDF'yi HttpResponse nesnesine ekleyerek dön
-        response = HttpResponse(pdf_bytes.getvalue(), content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="converted_document.pdf"'
-        return response
+            # Perform the conversion
+            convert(docx_filename, pdf_filename)  # Remove extension for output PDF
 
+            # Generate the PDF content as a byte stream
+            with open(pdf_filename, 'rb') as f:
+                pdf_data = f.read()
+
+            # Set the content type and response headers for PDF display
+            response = HttpResponse(pdf_data, content_type='application/pdf')
+            response['Content-Disposition'] = f'inline; filename={pdf_filename}'
+
+            os.remove(docx_filename)
+            os.remove(pdf_filename)
+
+            return response
+        except Exception as e:
+            # Handle errors here
+            return HttpResponse(f"An error occurred: {e}")
+
+    # Handle displaying the conversion form or other relevant logic
+    # ...
     return render(request, 'docxtopdf.html')
+
+def pdftodocx(request):
+    if request.method == 'POST':
+        try:
+            # Retrieve the PDF file from the request
+            pdf_file = request.FILES['pdf']
+            
+            # Generate unique filenames
+            file_id = str(uuid.uuid4())
+            pdf_filename = f"uploaded_{file_id}.pdf"
+            docx_filename = f"converted_{file_id}.docx"
+
+            # Save the uploaded PDF to the disk
+            with open(pdf_filename, 'wb') as f:
+                for chunk in pdf_file.chunks():
+                    f.write(chunk)
+
+            # Convert PDF to DOCX
+            cv = Converter(pdf_filename)
+            cv.convert(docx_filename, start=0, end=None)
+            cv.close()
+
+            # Read the generated DOCX file and send it as a response
+            with open(docx_filename, 'rb') as f:
+                docx_data = f.read()
+
+            return HttpResponse(docx_data, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+           
+
+            # Clean up files
+            os.remove(pdf_filename)
+            os.remove(docx_filename)
+
+            return response
+        except Exception as e:
+            return HttpResponse(f"An error occurred: {e}")
+
+    # If it's not a POST request, show the conversion page or form
+    return render(request, 'pdftodocx.html')
 
 def txttopdf(request):
     if request.method == 'POST':
-        txt = request.FILES['txt']
-        pdf = fpdf.FPDF()
+        txt_file = request.FILES['txt']
+        content = txt_file.read().decode('utf-8')  # Ensure the encoding matches the file content
+
+        # Create an FPDF object
+        pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size=12)
-        pdf.cell(200, 10, txt.read().decode('utf-8'), 0, 1)
-        return HttpResponse(pdf.output(dest='S'), content_type='application/pdf')
-    return render(request, 'txttopdf.html')
+        pdf.multi_cell(0, 10, content)  # Adjust width and height as needed
+
+        # Output the PDF content directly to a variable in memory
+        pdf_output = pdf.output(dest='S')  # No encoding needed here
+
+        # Create a Django HttpResponse and set the appropriate headers
+        response = HttpResponse(pdf_output, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="download.pdf"'
+
+        return response
+    else:
+        return render(request, 'txttopdf.html')
+
+def txttodocx(request):
+    if request.method == 'POST':
+        txt_file = request.FILES['txt']
+        content = txt_file.read().decode('utf-8')  # Assuming the text file is UTF-8 encoded
+
+        # Generate a unique ID for the file and filename
+        file_id = str(uuid.uuid4())
+        docx_filename = f"converted_{file_id}.docx"
+
+        # Create a new Document
+        doc = Document()
+        doc.add_paragraph(content)  # Add the text content to the document
+
+        # Save the document to a temporary path
+        doc.save(docx_filename)
+
+        # Read the generated DOCX file and send it as a response
+        with open(docx_filename, 'rb') as f:
+            docx_data = f.read()
+
+        return HttpResponse(docx_data, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        
+
+        # Clean up the file from the server after sending it
+        os.remove(docx_filename)
+
+        return response
+
+    # Display the form to upload a text file
+    return render(request, 'txttodocx.html')
 
 def jpgtopng(request):
     if request.method == 'POST':
