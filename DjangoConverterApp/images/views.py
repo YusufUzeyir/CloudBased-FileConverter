@@ -21,29 +21,23 @@ def imgtopdf(request):
 
 def docxtopdf(request):
     if request.method == 'POST':
-        pythoncom.CoInitialize()  # CoInitialize çağrısı
+        pythoncom.CoInitialize()  
         try:
             
-            # Generate a unique ID for the file and filename
             file_id = str(uuid.uuid4())
-            docx_filename = f"uploaded_{file_id}.docx"  # Örnek dosya adı
+            docx_filename = f"uploaded_{file_id}.docx" 
             pdf_filename = f"converted_{file_id}.pdf"
 
-            # Get the uploaded DOCX file
             docx_file = request.FILES['docx']
 
-            # Save the uploaded DOCX file
             with open(docx_filename, 'wb') as f:
                 f.write(docx_file.read())
 
-            # Perform the conversion
-            convert(docx_filename, pdf_filename)  # Remove extension for output PDF
+            convert(docx_filename, pdf_filename)  
 
-            # Generate the PDF content as a byte stream
             with open(pdf_filename, 'rb') as f:
                 pdf_data = f.read()
 
-            # Set the content type and response headers for PDF display
             response = HttpResponse(pdf_data, content_type='application/pdf')
             response['Content-Disposition'] = f'inline; filename={pdf_filename}'
 
@@ -52,42 +46,33 @@ def docxtopdf(request):
 
             return response
         except Exception as e:
-            # Handle errors here
             return HttpResponse(f"An error occurred: {e}")
 
-    # Handle displaying the conversion form or other relevant logic
-    # ...
     return render(request, 'docxtopdf.html')
 
 def pdftodocx(request):
     if request.method == 'POST':
         try:
-            # Retrieve the PDF file from the request
             pdf_file = request.FILES['pdf']
             
-            # Generate unique filenames
             file_id = str(uuid.uuid4())
             pdf_filename = f"uploaded_{file_id}.pdf"
             docx_filename = f"converted_{file_id}.docx"
 
-            # Save the uploaded PDF to the disk
             with open(pdf_filename, 'wb') as f:
                 for chunk in pdf_file.chunks():
                     f.write(chunk)
 
-            # Convert PDF to DOCX
             cv = Converter(pdf_filename)
             cv.convert(docx_filename, start=0, end=None)
             cv.close()
 
-            # Read the generated DOCX file and send it as a response
             with open(docx_filename, 'rb') as f:
                 docx_data = f.read()
 
             return HttpResponse(docx_data, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
            
 
-            # Clean up files
             os.remove(pdf_filename)
             os.remove(docx_filename)
 
@@ -95,7 +80,6 @@ def pdftodocx(request):
         except Exception as e:
             return HttpResponse(f"An error occurred: {e}")
 
-    # If it's not a POST request, show the conversion page or form
     return render(request, 'pdftodocx.html')
 
 def txttopdf(request):
