@@ -45,7 +45,8 @@
                             </em>
                         </div>
                     </div>
-                    <form method="POST" enctype="multipart/form-data">
+                
+                    <form method="POST" enctype="multipart/form-data" >
                         {% csrf_token %}
                         <div class="m-2 px-3">
                             <input class="form-control" type="file" accept=".docx" id="docx" name="docx">
@@ -54,6 +55,7 @@
                             <button type="submit" class="btn btn-primary">Convert</button>
                         </div>
                     </form>
+                    
                 </div>
 
             </div>

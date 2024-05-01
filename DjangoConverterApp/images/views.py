@@ -5,6 +5,9 @@ import fpdf
 import io
 from docx import Document
 from docx2pdf import convert
+import uuid
+import pythoncom
+import os
 
 def imgtopdf(request):
     if request.method == 'POST':
@@ -13,26 +16,6 @@ def imgtopdf(request):
 
         return HttpResponse(pdf, content_type='application/pdf')
     return render(request, 'imgtopdf.html')
-
-
-def docxtopdf(request):
-    if request.method == 'POST':
-        docx_file = request.FILES['docx']
-
-        # Docx dosyasını oku
-        docx_content = docx_file.read()
-
-        # Docx içeriğini PDF'ye dönüştür
-        document = Document(io.BytesIO(docx_content))
-        pdf_bytes = io.BytesIO()
-        document.save(pdf_bytes)
-
-        # PDF'yi HttpResponse nesnesine ekleyerek dön
-        response = HttpResponse(pdf_bytes.getvalue(), content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="converted_document.pdf"'
-        return response
-
-    return render(request, 'docxtopdf.html')
 
 def txttopdf(request):
     if request.method == 'POST':
@@ -70,3 +53,44 @@ def png(request):
 
         return HttpResponse('not jpg')
     return render(request, 'png.html')
+
+
+def docxtopdf(request):
+    if request.method == 'POST':
+        pythoncom.CoInitialize()  # CoInitialize çağrısı
+        try:
+            
+            # Generate a unique ID for the file and filename
+            file_id = str(uuid.uuid4())
+            docx_filename = f"uploaded_{file_id}.docx"  # Örnek dosya adı
+            pdf_filename = f"converted_{file_id}.pdf"
+
+            # Get the uploaded DOCX file
+            docx_file = request.FILES['docx']
+
+            # Save the uploaded DOCX file
+            with open(docx_filename, 'wb') as f:
+                f.write(docx_file.read())
+
+            # Perform the conversion
+            convert(docx_filename, pdf_filename)  # Remove extension for output PDF
+
+            # Generate the PDF content as a byte stream
+            with open(pdf_filename, 'rb') as f:
+                pdf_data = f.read()
+
+            # Set the content type and response headers for PDF display
+            response = HttpResponse(pdf_data, content_type='application/pdf')
+            response['Content-Disposition'] = f'inline; filename={pdf_filename}'
+
+            os.remove(docx_filename)
+            os.remove(pdf_filename)
+
+            return response
+        except Exception as e:
+            # Handle errors here
+            return HttpResponse(f"An error occurred: {e}")
+
+    # Handle displaying the conversion form or other relevant logic
+    # ...
+    return render(request, 'docxtopdf.html')
