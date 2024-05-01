@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
-    <title>JPG to PNG</title>
+    <title>TXT to DOCX</title>
     <style>
         .btn-group .btn:hover {
             background-color: rgb(0, 0, 76) !important;
@@ -25,7 +25,7 @@
                 <div class="card"
                     style="background-image: linear-gradient(to right, #17181c, #1d253c); border-radius: 20px;">
                     <div class="p-3 text-center">
-                        <h1 style="color: white;">JPG to PNG</h1>
+                        <h1 style="color: white;">TXT to DOCX</h1>
                         <div class="btn-group">
                             <em>
                                 <a href="/jpgtopng"><button type="button" class="btn btn-warning btn-sm">JPG to
@@ -59,19 +59,19 @@
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="m-2 px-3">
-                            <input class="form-control" type="file" accept="image/jpeg" id="img" name="img">
+                            <input class="form-control" type="file" accept=".txt" id="txt" name="txt">
                         </div>
                         <div class="m-2 py-3 text-center">
-                            <button type="submit" class="btn btn-primary">Çevir</button>
+                            <button type="submit" class="btn btn-primary">Convert</button>
                         </div>
                     </form>
                 </div>
                 <div style="text-align: center; margin-top: 5%;" class="row justify-content-center">
                     <div class="col-md-6">
-                        <img src="img_file/jpg-file.png" alt="JPG File">
+                        <img src="img_file/txt.png" alt="JPG File">
                     </div>
                     <div class="col-md-6">
-                        <img src="img_file/png.png" alt="PDF File">
+                        <img src="img_file/docx-file.png" alt="PDF File">
                     </div>
                 </div>
             </div>
