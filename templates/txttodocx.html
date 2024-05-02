@@ -236,10 +236,10 @@
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="m-2 px-3">
-                            <input class="form-control" type="file" accept=".txt" id="txt" name="txt">
+                            <input class="form-control" type="file" accept=".txt" id="txt" name="txt" onchange="dosyaYuklendi()">
                         </div>
                         <div class="m-2 py-3 text-center">
-                            <button type="submit" class="btn btn-success">Convert</button>
+                            <button type="submit" class="btn btn-success" id="cevirButon" disabled>Çevir</button>
                         </div>
                     </form>
                 </div>
@@ -276,6 +276,15 @@
         <img src="/staticfiles/photo.png" id="img5">
         <img src="/staticfiles/txt.png" id="img6">
     </div>
+
+    <script>
+        // Dosya yükleme işlemi tamamlandığında tetiklenecek fonksiyon
+        function dosyaYuklendi() {
+            // Dosya yükleme işlemi tamamlandığında "Çevir" butonunu etkinleştir
+            document.getElementById("cevirButon").removeAttribute("disabled");
+        }
+    </script>
+
 </body>
 
 </html>
