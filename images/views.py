@@ -7,6 +7,7 @@ from docx import Document
 from docx2pdf import convert
 from pdf2docx import Converter
 import uuid
+import subprocess
 import pythoncom
 import os
 
