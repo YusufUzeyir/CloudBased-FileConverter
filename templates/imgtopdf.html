@@ -236,7 +236,7 @@
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="m-2 px-3">
-                            <input class="form-control" type="file" accept="image/jpeg/png" id="img" name="img" onchange="dosyaYuklendi()">
+                            <input class="form-control" type="file" accept=".png,.jpg" id="img" name="img" onchange="dosyaYuklendi()">
                         </div>
                         <div class="m-2 py-3 text-center">
                             <button type="submit" class="btn btn-success" id="cevirButon" disabled>Çevir</button>
