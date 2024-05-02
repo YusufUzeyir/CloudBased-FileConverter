@@ -10,6 +10,10 @@ import uuid
 import pythoncom
 import os
 
+def index(request):
+    
+    return render(request, 'index.html')
+
 def imgtopdf(request):
     if request.method == 'POST':
         img = request.FILES['img']
