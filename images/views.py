@@ -26,26 +26,29 @@ def imgtopdf(request):
 
 def docxtopdf(request):
     if request.method == 'POST':
-        pythoncom.CoInitialize()  
         try:
-            
+            docx_file = request.FILES['docx']
             file_id = str(uuid.uuid4())
             docx_filename = f"uploaded_{file_id}.docx" 
             pdf_filename = f"converted_{file_id}.pdf"
 
-            docx_file = request.FILES['docx']
-
+            # Write the uploaded DOCX file to disk
             with open(docx_filename, 'wb') as f:
                 f.write(docx_file.read())
 
-            convert(docx_filename, pdf_filename)  
+            # Convert DOCX to PDF using unoconv and LibreOffice
+            cmd = f"unoconv -f pdf -o {pdf_filename} {docx_filename}"
+            subprocess.run(cmd, shell=True)
 
+            # Read the generated PDF file and send it as a response
             with open(pdf_filename, 'rb') as f:
                 pdf_data = f.read()
 
+            # Create a Django HttpResponse and set the appropriate headers
             response = HttpResponse(pdf_data, content_type='application/pdf')
             response['Content-Disposition'] = f'inline; filename={pdf_filename}'
 
+            # Clean up temporary files
             os.remove(docx_filename)
             os.remove(pdf_filename)
 
