@@ -8,6 +8,5 @@ urlpatterns = [
     path('png', views.png),
     path('docxtopdf', views.docxtopdf),
     path('pdftodocx', views.pdftodocx),
-    path('txttopdf', views.txttopdf),
     path('txttodocx', views.txttodocx),
 ]
