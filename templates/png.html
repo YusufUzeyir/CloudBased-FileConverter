@@ -42,10 +42,10 @@
         }
 
         nav {
-            margin-top: 8px;
-            margin-left: 15px;
             display: flex;
             flex-direction: row;
+            justify-content: center;
+            margin-top: 7px;
             align-items: center;
             gap: 2rem;
             color: var(--textDim);
@@ -53,6 +53,7 @@
             box-sizing: border-box;
             z-index: 9999;
         }
+
 
         .menu:hover {
             color: var(--text);
@@ -235,7 +236,8 @@
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="m-2 px-3">
-                            <input class="form-control" type="file" accept="image/png" id="img" name="img" onchange="dosyaYuklendi()">
+                            <input class="form-control" type="file" accept="image/png" id="img" name="img"
+                                onchange="dosyaYuklendi()">
                         </div>
                         <div class="m-2 px-3">
                             <label for="convert-type" class="form-label" style="color: white;">Dönüştürmek istediğin

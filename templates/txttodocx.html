@@ -42,10 +42,10 @@
         }
 
         nav {
-            margin-top: 8px;
-            margin-left: 15px;
             display: flex;
             flex-direction: row;
+            justify-content: center;
+            margin-top: 7px;
             align-items: center;
             gap: 2rem;
             color: var(--textDim);
@@ -53,6 +53,7 @@
             box-sizing: border-box;
             z-index: 9999;
         }
+
 
         .menu:hover {
             color: var(--text);
@@ -235,7 +236,8 @@
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="m-2 px-3">
-                            <input class="form-control" type="file" accept=".txt" id="txt" name="txt" onchange="dosyaYuklendi()">
+                            <input class="form-control" type="file" accept=".txt" id="txt" name="txt"
+                                onchange="dosyaYuklendi()">
                         </div>
                         <div class="m-2 py-3 text-center">
                             <button type="submit" class="btn btn-success" id="cevirButon" disabled>Çevir</button>
