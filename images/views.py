@@ -7,8 +7,13 @@ from docx import Document
 from docx2pdf import convert
 from pdf2docx import Converter
 import uuid
-import pythoncom
 import os
+import logging
+from django.shortcuts import render
+from reportlab.pdfgen import canvas
+from io import BytesIO
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
 
 def index(request):
     
@@ -25,7 +30,6 @@ def imgtopdf(request):
 
 def docxtopdf(request):
     if request.method == 'POST':
-        pythoncom.CoInitialize()  
         try:
             
             file_id = str(uuid.uuid4())
@@ -37,7 +41,6 @@ def docxtopdf(request):
             with open(docx_filename, 'wb') as f:
                 f.write(docx_file.read())
 
-            convert(docx_filename, pdf_filename)  
 
             with open(pdf_filename, 'rb') as f:
                 pdf_data = f.read()
@@ -86,7 +89,42 @@ def pdftodocx(request):
 
     return render(request, 'pdftodocx.html')
 
+def txttopdf(request):
+    if request.method == 'POST':
+        txt_file = request.FILES['txt']
+        content = txt_file.read().decode('ISO-8859-9')
 
+        # Create a buffer to store PDF data
+        pdf_buffer = BytesIO()
+
+        # Create a canvas object with a PDF buffer
+        pdf = canvas.Canvas(pdf_buffer)
+
+        # Set font and size with a TrueType font supporting Turkish characters
+        pdf.setFont("Times-Roman", 12)  # Replace "Times-Roman" with an appropriate TrueType font
+
+        lines = content.splitlines()
+        y_position = 750  # Initial y position for the first line
+
+        for line in lines:
+            # Encode the line to bytes with the same encoding used for reading the file
+            encoded_line = line.encode('ISO-8859-9', errors='replace')  # Change encoding if needed
+            pdf.drawString(100, y_position, encoded_line.decode('ISO-8859-9', errors='replace'))  # Draw the line
+            y_position -= 15  # Move to the next line with spacing
+
+        # Save the PDF content to the buffer
+        pdf.save()
+
+        # Create a Django HttpResponse with appropriate content type and headers
+        response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="download.pdf"'
+
+        # Close the buffer and return the response
+        pdf_buffer.close()
+        return response
+
+    else:
+        return render(request, 'txttopdf.html')
 
 def txttodocx(request):
     if request.method == 'POST':
@@ -145,3 +183,38 @@ def png(request):
 
         return HttpResponse('not jpg')
     return render(request, 'png.html')
+
+def docxtopdf(request):
+    if request.method == 'POST':
+        try:
+            docx_file = request.FILES['docx']
+
+            file_id = str(uuid.uuid4())
+            docx_filename = f"uploaded_{file_id}.docx"
+            pdf_filename = f"converted_{file_id}.pdf"
+
+            # Write the uploaded DOCX file to disk
+            with open(docx_filename, 'wb') as f:
+                f.write(docx_file.read())
+
+            # Convert DOCX to PDF using LibreOffice and unoconv
+            cmd = f"libreoffice --headless --convert-to pdf {pdf_filename} --outdir {os.getcwd()} --nologo --norestore --nodefault"
+            run(cmd, shell=True, stdout=PIPE, stderr=PIPE, check=True)
+            # Read the generated PDF file and send it as a response
+            with open(pdf_filename, 'rb') as f:
+                pdf_data = f.read()
+
+            # Create a Django HttpResponse and set the appropriate headers
+            response = HttpResponse(pdf_data, content_type='application/pdf')
+            response['Content-Disposition'] = f'inline; filename={pdf_filename}'
+
+
+            # Clean up temporary files
+            os.remove(docx_filename)
+            os.remove(pdf_filename)
+
+            return response
+        except Exception as e:
+            return HttpResponse(f"An error occurred: {e}")
+
+    return render(request, 'docxtopdf.html')
