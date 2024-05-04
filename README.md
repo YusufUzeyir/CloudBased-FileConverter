@@ -59,6 +59,9 @@ Windows:
 ```bash
 git clone https://github.com/YusufUzeyir/CloudBased-FileConverter.git
 ```
+```bash
+python manage.py runserver
+```
 ### Application Images
 
 ![Ekran Görüntüsü (98)](https://github.com/YusufUzeyir/CloudBased-FileConverter/assets/92249669/9a1c54b6-cfd4-41d6-be40-cf00098c1a58)<br>
