@@ -59,9 +59,10 @@ Windows:
 ```bash
 git clone https://github.com/YusufUzeyir/CloudBased-FileConverter.git
 ```
+### Application Images
 
-![Ekran Görüntüsü (98)](https://github.com/YusufUzeyir/CloudBased-FileConverter/assets/92249669/9a1c54b6-cfd4-41d6-be40-cf00098c1a58)
-![Ekran Görüntüsü (99)](https://github.com/YusufUzeyir/CloudBased-FileConverter/assets/92249669/7cc52328-b30d-444b-897d-e2abeb100096)
+![Ekran Görüntüsü (98)](https://github.com/YusufUzeyir/CloudBased-FileConverter/assets/92249669/9a1c54b6-cfd4-41d6-be40-cf00098c1a58)<br>
+![Ekran Görüntüsü (99)](https://github.com/YusufUzeyir/CloudBased-FileConverter/assets/92249669/7cc52328-b30d-444b-897d-e2abeb100096)<br>
 ![Ekran Görüntüsü (100)](https://github.com/YusufUzeyir/CloudBased-FileConverter/assets/92249669/adb8311a-0007-478e-a1bf-5d5f7bf46ab2)
 
 
