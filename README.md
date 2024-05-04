@@ -1,35 +1,14 @@
-# docxtopdf
+# File Convert
 
-This repository contains a Python function to convert DOCX files to PDF format.
+This repository contains a Python function for file extension conversion.
 
-**Note:** This function is currently designed for use on Windows operating systems.
+**Note:** This function is currently designed for use on Linux Based operating systems.
 
-## Functionality
+## Usage for Windows
 
-The `docxtopdf` function handles the conversion process as follows:
-
-1. **Checks request method:** Ensures the request is a POST method.
-2. **Initialization:** Initializes the `pythoncom` library for working with COM objects (required for Windows interaction with Microsoft Word).
-3. **File handling:**
-   - Generates a unique identifier (`file_id`) using `uuid.uuid4()`.
-   - Creates temporary filenames for the uploaded DOCX and converted PDF files using the generated `file_id`.
-   - Retrieves the uploaded DOCX file from the request object (`request.FILES['docx']`).
-   - Saves the uploaded DOCX file to the temporary location.
-4. **Conversion:** Calls the `convert` function (implementation assumed to be elsewhere) to perform the DOCX to PDF conversion using the temporary filenames.
-5. **PDF response:**
-   - Reads the converted PDF content from the temporary file.
-   - Creates an HTTP response object with the PDF data and appropriate content type (`application/pdf`).
-   - Sets the content disposition header to allow inline display (`inline`) and specify the filename for download (`converted_{file_id}.pdf`).
-6. **Cleanup:** Removes the temporary DOCX and PDF files after successful conversion.
-7. **Error handling:** In case of exceptions, returns an HTTP response with an error message.
-
-## Usage
-
-1. **Include the function:** Import the `docxtopdf` function into your application code.
-2. **Process upload:** In a view function or similar context, handle the file upload and pass the request object to the `docxtopdf` function.
-3. **Handle response:** The function returns an HTTP response object. You can either return this directly or process the response further in your application logic.
-
-## Code Example
+1. **Add** `import pythoncom` to /images/views.py.
+2. `docxtopdf` function should be replaced with the function given below.
+## Code
 
 ```python
 def docxtopdf(request):
