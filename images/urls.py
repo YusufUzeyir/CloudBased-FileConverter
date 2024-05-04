@@ -7,6 +7,8 @@ urlpatterns = [
     path('jpgtopng', views.jpgtopng),
     path('png', views.png),
     path('docxtopdf', views.docxtopdf),
+    path('txttopdf', views.txttopdf),
     path('pdftodocx', views.pdftodocx),
     path('txttodocx', views.txttodocx),
+    
 ]
