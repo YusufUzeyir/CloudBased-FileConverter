@@ -41,3 +41,22 @@ def docxtopdf(request):
             return HttpResponse(f"An error occurred: {e}")
 
     return render(request, 'docxtopdf.html')
+```
+
+### Run Locally
+
+To run **File Converter** locally, run this command on your git bash:
+
+Linux and macOS:
+
+```bash
+sudo git clone https://github.com/YusufUzeyir/CloudBased-FileConverter.git
+```
+
+Windows:
+
+```bash
+git clone https://github.com/YusufUzeyir/CloudBased-FileConverter.git
+```
+
+
