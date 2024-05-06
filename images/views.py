@@ -94,32 +94,26 @@ def txttopdf(request):
         txt_file = request.FILES['txt']
         content = txt_file.read().decode('ISO-8859-9')
 
-        # Create a buffer to store PDF data
         pdf_buffer = BytesIO()
 
-        # Create a canvas object with a PDF buffer
         pdf = canvas.Canvas(pdf_buffer)
 
-        # Set font and size with a TrueType font supporting Turkish characters
-        pdf.setFont("Times-Roman", 12)  # Replace "Times-Roman" with an appropriate TrueType font
+        pdf.setFont("Times-Roman", 12)  
 
         lines = content.splitlines()
-        y_position = 750  # Initial y position for the first line
+        y_position = 750  
 
         for line in lines:
-            # Encode the line to bytes with the same encoding used for reading the file
-            encoded_line = line.encode('ISO-8859-9', errors='replace')  # Change encoding if needed
-            pdf.drawString(100, y_position, encoded_line.decode('ISO-8859-9', errors='replace'))  # Draw the line
-            y_position -= 15  # Move to the next line with spacing
+           
+            encoded_line = line.encode('ISO-8859-9', errors='replace') 
+            pdf.drawString(100, y_position, encoded_line.decode('ISO-8859-9', errors='replace')) 
+            y_position -= 15 
 
-        # Save the PDF content to the buffer
         pdf.save()
 
-        # Create a Django HttpResponse with appropriate content type and headers
         response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="download.pdf"'
 
-        # Close the buffer and return the response
         pdf_buffer.close()
         return response
 
@@ -129,32 +123,32 @@ def txttopdf(request):
 def txttodocx(request):
     if request.method == 'POST':
         txt_file = request.FILES['txt']
-        content = txt_file.read().decode('utf-8')  # Assuming the text file is UTF-8 encoded
+        content = txt_file.read().decode('utf-8') 
 
-        # Generate a unique ID for the file and filename
+        
         file_id = str(uuid.uuid4())
         docx_filename = f"converted_{file_id}.docx"
 
-        # Create a new Document
+      
         doc = Document()
-        doc.add_paragraph(content)  # Add the text content to the document
+        doc.add_paragraph(content)  
 
-        # Save the document to a temporary path
+        
         doc.save(docx_filename)
 
-        # Read the generated DOCX file and send it as a response
+      
         with open(docx_filename, 'rb') as f:
             docx_data = f.read()
 
         return HttpResponse(docx_data, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
         
 
-        # Clean up the file from the server after sending it
+       
         os.remove(docx_filename)
 
         return response
 
-    # Display the form to upload a text file
+  
     return render(request, 'txttodocx.html')
 
 def jpgtopng(request):
@@ -193,23 +187,21 @@ def docxtopdf(request):
             docx_filename = f"uploaded_{file_id}.docx"
             pdf_filename = f"converted_{file_id}.pdf"
 
-            # Write the uploaded DOCX file to disk
             with open(docx_filename, 'wb') as f:
                 f.write(docx_file.read())
 
-            # Convert DOCX to PDF using LibreOffice and unoconv
+            
             cmd = f"libreoffice --headless --convert-to pdf {pdf_filename} --outdir {os.getcwd()} --nologo --norestore --nodefault"
             run(cmd, shell=True, stdout=PIPE, stderr=PIPE, check=True)
-            # Read the generated PDF file and send it as a response
+            
             with open(pdf_filename, 'rb') as f:
                 pdf_data = f.read()
 
-            # Create a Django HttpResponse and set the appropriate headers
+         
             response = HttpResponse(pdf_data, content_type='application/pdf')
             response['Content-Disposition'] = f'inline; filename={pdf_filename}'
 
 
-            # Clean up temporary files
             os.remove(docx_filename)
             os.remove(pdf_filename)
 
